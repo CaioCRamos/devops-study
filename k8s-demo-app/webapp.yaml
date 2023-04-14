@@ -1,0 +1,52 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: webapp-deployment
+  labels:
+    app: webapp
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: webapp
+  template: #configuration of pods
+    metadata:
+      labels:
+        app: webapp
+    spec:
+      containers:
+      - name: webapp
+        image: nanajanashia/k8s-demo-app:v1.0
+        ports:
+        - containerPort: 3000
+        env:
+        #environment variables defined on the docker image
+        - name: USER_NAME
+          valueFrom:
+            secretKeyRef:
+              name: mongo-secret #name of the secret file, defined at mongo-secret.yaml (metadata)
+              key: mongo-user #name of the key
+        - name: USER_PWD
+          valueFrom:
+            secretKeyRef:
+              name: mongo-secret #name of the secret file, defined at mongo-secret.yaml (metadata)
+              key: mongo-password #name of the key
+        - name: DB_URL
+          valueFrom:
+            configMapKeyRef:
+              name: mongo-config #name of the configmap file, defined at mongo-config.yaml (metadata)
+              key:  mongo-url #name of the key
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: webapp-service
+spec:
+  type: NodePort #external service type. Default is ClusterIP, an internal service type
+  selector:
+    app: webapp
+  ports:
+    - protocol: TCP
+      port: 3000
+      targetPort: 3000 #should be the same as the containerPort above
+      nodePort: 30100 #necessary to type: NodePort, should be set between 30000-32767
