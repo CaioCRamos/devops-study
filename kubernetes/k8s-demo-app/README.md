@@ -9,7 +9,7 @@ kubectl apply mongo-secret.yaml
 
 kubectl apply mongo.yaml
 
-kubectl webapp.yaml
+kubectl apply webapp.yaml
 ```
 
 To list:
@@ -38,4 +38,16 @@ kubectl logs webapp-deployment-65d4754f9d-9szdb
 
 # streaming
 kubectl logs webapp-deployment-65d4754f9d-9szdb -f     
+```
+
+To delete everything:
+
+```shell
+kubectl delete -f mongo-config.yaml
+
+kubectl delete -f mongo-secret.yaml
+
+kubectl delete -f mongo.yaml
+
+kubectl delete -f webapp.yaml
 ```
